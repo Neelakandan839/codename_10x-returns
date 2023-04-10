@@ -1488,7 +1488,7 @@ const AboutUs = () => {
               >
                 <TextField
                   type="text"
-                  id="outlined-basic1"
+                  id="outlined-basi01"
                   placeholder="Full Name"
                   style={{
                     background: "#ffffff",
@@ -1535,7 +1535,7 @@ const AboutUs = () => {
               >
                 <TextField
                   type="number"
-                  id="outlined-basic2"
+                  id="outlined-basic02"
                   placeholder="Phone*"
                   style={{
                     background: "#ffffff",
@@ -1582,7 +1582,7 @@ const AboutUs = () => {
               >
                 <TextField
                   type="email"
-                  id="outlined-basic3"
+                  id="outlined-basic03"
                   placeholder="Email"
                   style={{
                     background: "#ffffff",
