@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
@@ -12,11 +12,19 @@ import MenuIcon from "@mui/icons-material/Menu";
 import TextField from "@mui/material/TextField";
 import Collapse from "@mui/material/Collapse";
 import { Swiper, SwiperSlide } from "swiper/react";
+import Dialog from "@mui/material/Dialog";
 import GoogleMapReact from "google-map-react";
+import PersonIcon from "@mui/icons-material/Person";
+import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
+import EmailIcon from "@mui/icons-material/Email";
+import CloseIcon from "@mui/icons-material/Close";
+import { getData, postData } from "../utils";
 import "swiper/css";
 import "swiper/css/pagination";
 
 import landing_img from "../images/db.webp";
+import landing_img_xs from "../images/mb.webp";
+import offer_xs from "../images/offer-xs.webp";
 import logo from "../images/logo.webp";
 import offer from "../images/offer.webp";
 import amenities from "../images/amenities.webp";
@@ -50,14 +58,33 @@ const galleryImgList = [
 ];
 
 const HomePage = () => {
+  const [openEnquiry, setOpenEnquiry] = useState(false);
+
+  const [apiData, setApiData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getData();
+      setApiData(data);
+    };
+    fetchData();
+  }, []);
+
   return (
-    <Grid container>
+    <Grid container sx={{ position: "relative" }}>
       <Grid item xs={12}>
-        <Navbar />
+        <Navbar setOpenEnquiry={setOpenEnquiry} />
       </Grid>
-      <Grid item xs={12} style={{ marginTop: "80px" }}>
+      <Grid
+        item
+        xs={12}
+        sx={{
+          marginTop: { xs: "60px", sm: "80px", position: "relative" },
+          marginBottom: { xs: "30px", sm: "0" },
+        }}
+      >
         <Img
-          style={{
+          sx={{
             width: "100%",
             height: "100%",
             display: { xs: "none", sm: "block" },
@@ -65,6 +92,17 @@ const HomePage = () => {
           alt="landing_img"
           src={landing_img}
         />
+        <Img
+          sx={{
+            width: "100%",
+            height: "60%",
+            marginBottom: "30px",
+            display: { xs: "block", sm: "none" },
+          }}
+          alt="landing_img_xs"
+          src={landing_img_xs}
+        />
+        <UserDetails />
       </Grid>
       <Grid
         container
@@ -76,9 +114,22 @@ const HomePage = () => {
       >
         <Grid item xs={10} md={7}>
           <Img
-            style={{ width: "100%", height: "100%" }}
+            sx={{
+              width: "100%",
+              height: "100%",
+              display: { xs: "none", sm: "block" },
+            }}
             alt="offer"
             src={offer}
+          />
+          <Img
+            sx={{
+              width: "100%",
+              height: "100%",
+              display: { xs: "block", sm: "none" },
+            }}
+            alt="offer"
+            src={offer_xs}
           />
         </Grid>
       </Grid>
@@ -110,7 +161,7 @@ const HomePage = () => {
           width: "100%",
         }}
       >
-        <Location />
+        <Location setOpenEnquiry={setOpenEnquiry} />
       </Box>
 
       <Box
@@ -121,13 +172,72 @@ const HomePage = () => {
         <AboutUs />
       </Box>
       <PrivacyPolicy />
+      <Grid
+        item
+        xs={12}
+        justifyContent="center"
+        alignItems="center"
+        sx={{
+          display: { xs: "flex", sm: "none" },
+          width: "100%",
+          background: "#272727",
+          padding: "10px",
+          position: "fixed",
+          bottom: 0,
+        }}
+      >
+        <Typography
+          component="h1"
+          onClick={() => setOpenEnquiry(true)}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          style={{
+            textAlign: "center",
+            fontSize: "16px",
+            color: "#fff",
+          }}
+        >
+          <EmailIcon sx={{ fontSize: 20, color: "#fff", marginRight: "5px" }} />{" "}
+          ENQUIRE NOW
+        </Typography>
+      </Grid>
+      <Enquiry openEnquiry={openEnquiry} setOpenEnquiry={setOpenEnquiry} />
+      <Grid
+        item
+        xs={3}
+        sx={{
+          marginBottom: "20px",
+          display: { xs: "none", sm: "flex" },
+          position: "fixed",
+          bottom: 0,
+          right: "20px",
+        }}
+      >
+        <Button
+          onClick={() => setOpenEnquiry(true)}
+          style={{
+            width: "100%",
+            height: "50px",
+            background: "#49484b",
+            textTransform: "capitalize",
+            color: "#ffffff",
+            fontWeight: "bold",
+            fontSize: "18px",
+            border: "2px solid #ffffff",
+          }}
+          variant="contained"
+        >
+          I'm interested
+        </Button>
+      </Grid>
     </Grid>
   );
 };
 
 export default HomePage;
 
-const Navbar = () => {
+const Navbar = (setOpenEnquiry) => {
   const [drawerState, setDrawerState] = useState(false);
   return (
     <AppBar
@@ -292,10 +402,10 @@ const Navbar = () => {
               </Link>
               <Link
                 href="#eBrochure"
+                onClick={() => setOpenEnquiry?.setOpenEnquiry(true)}
                 underline="none"
                 sx={{
                   padding: "0 10px",
-                  textTransform: "capitalize",
                 }}
               >
                 <Typography
@@ -346,12 +456,16 @@ const Navbar = () => {
         </Grid>
       </Container>
 
-      <Drawer drawerState={drawerState} setDrawerState={setDrawerState} />
+      <Drawer
+        drawerState={drawerState}
+        setDrawerState={setDrawerState}
+        setOpenEnquiry={setOpenEnquiry}
+      />
     </AppBar>
   );
 };
 
-function Drawer({ drawerState, setDrawerState }) {
+function Drawer({ drawerState, setDrawerState, setOpenEnquiry }) {
   return (
     <Collapse
       in={drawerState}
@@ -523,11 +637,13 @@ function Drawer({ drawerState, setDrawerState }) {
         >
           <Link
             href="#eBrochure"
-            onClick={() => setDrawerState(false)}
+            onClick={() => {
+              setOpenEnquiry?.setOpenEnquiry(true);
+              setDrawerState(false);
+            }}
             underline="none"
             sx={{
               padding: "0 10px",
-              textTransform: "capitalize",
             }}
           >
             <Typography
@@ -602,7 +718,61 @@ const Overview = () => {
   );
 };
 
+const data = [
+  {
+    title: "Invest in a Great Brand",
+    subTitle: "",
+    list: [
+      "South India’s well established real estate developers with operations in Chennai, Hyderabad and Bangalore. Alliance and Urbanrise believes in building relationships based on trust and commitment to quality.",
+    ],
+  },
+  {
+    title: "Invest in Clear Titles.",
+    subTitle: "",
+    list: [
+      " 10X returns is a DTCP approved plot.",
+      "Ready to build villa plots and it comes with clear title and transparency that Alliance is reputed for.",
+    ],
+  },
+  {
+    title: "Invest in a Great Location.",
+    subTitle: "",
+    list: [
+      "Located bang on State Highway SH-57 on a 6 Lane Highway.",
+      " The Aerospace park, in which 30 areospace companies that are setting up units takes the Oragadam-Sriperambadur belt to a new high and this is part of the Phase One plan alone.",
+      "Oragadam is home to auto majors including Daimler-Benz, Renault-Nissan, Ford, Hyundai and others.",
+    ],
+  },
+  {
+    title: "Invest in a Great Location.",
+    subTitle: "",
+    list: [
+      "Well connected by road and rail, Oragadam is regarded the biggest automobile hub in not just Chennai or India, But, the whole of South Asia.",
+      " Emerging as the next giant residential hub. It is estimated to have a workforce of over 1 Million by 2035. It is soon set to have all facilities of a cosmopolitan city of Intl standards.",
+    ],
+  },
+  {
+    title: "Invest in a Great Product.",
+    subTitle: "",
+    list: [
+      "A PLUG & BUILD LAYOUT – 30 Acres of Well developed layout of plots equipped with black top roads, street lights, Well-planned underground sewage and Water and EB connection up to the plot.",
+    ],
+  },
+  {
+    title: "High potential for fast Appreciation",
+    subTitle:
+      "Property set to earn over 30% to 100% more than interior locations.",
+    list: [
+      "Located exactly on 6-lane Oragadam main road.",
+      "Proximity to arterial roads keeos you ahead of others in time and space.",
+      "The 200ft Oragadam main road connects you to Chennai city and its suburbs.",
+    ],
+  },
+];
+
 const Configurations = () => {
+  const sliderRef = useRef();
+  const [currentExpIdx, setCurrentExpIdx] = useState(0);
   return (
     <Grid
       container
@@ -637,346 +807,203 @@ const Configurations = () => {
       <Grid
         container
         item
+        xs={10}
+        justifyContent="center"
+        padding="50px 0"
+        sx={{
+          ":nthChild(odd)": {
+            background: "#ededed",
+          },
+          display: { xs: "flex", sm: "none" },
+        }}
+      >
+        <Swiper
+          slidesPerView={1}
+          spaceBetween={30}
+          onSlideChange={(swiper) => {
+            const currIdx = swiper.activeIndex;
+            setCurrentExpIdx(currIdx);
+          }}
+          onSwiper={(sw) => {
+            sliderRef.current = sw;
+          }}
+          className="mySwiper"
+        >
+          {(data || []).map((item, index) => (
+            <SwiperSlide key={index} style={{ width: "100%" }}>
+              <Grid
+                item
+                key={index}
+                xs={12}
+                width="100%"
+                display="flex"
+                flexDirection="column"
+                justifyContent="center"
+                style={{
+                  aspectRatio: "4/3",
+                  padding: "20px 10px",
+                }}
+              >
+                <Typography
+                  component="h1"
+                  style={{
+                    textAlign: "center",
+                    padding: "10px 0",
+                    fontSize: "20px",
+                    fontWeight: 400,
+                    color: "#3a3a3c",
+                  }}
+                >
+                  {item?.title}
+                </Typography>
+                <Typography
+                  key={index}
+                  component="p"
+                  style={{
+                    textAlign: "center",
+                    padding: "10px 0",
+                    fontSize: "14px",
+                    lineHeight: "20px",
+                    color: "#3a3a3c",
+                  }}
+                >
+                  {item?.subTitle || ""}
+                </Typography>
+                {(item?.list || []).map((li, index) => (
+                  <Typography
+                    key={index}
+                    component="li"
+                    style={{
+                      textAlign: "center",
+                      padding: "10px 0",
+                      fontSize: "14px",
+                      lineHeight: "20px",
+                      color: "#3a3a3c",
+                    }}
+                  >
+                    {li || ""}
+                  </Typography>
+                ))}
+              </Grid>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </Grid>
+      <Grid
+        item
+        xs={8}
+        sx={{ display: { xs: "flex", sm: "none" } }}
+        justifyContent="center"
+      >
+        <Button
+          onClick={() => sliderRef?.current?.slidePrev()}
+          style={{
+            width: "50px",
+            height: "50px",
+            background: "#f5f5f5",
+            textTransform: "capitalize",
+            color: currentExpIdx === 0 ? "grey" : "#000000",
+            fontWeight: "bold",
+            fontSize: "60px",
+            boxShadow: "none",
+          }}
+          variant="contained"
+        >
+          ‹
+        </Button>
+        <Button
+          onClick={() => sliderRef?.current?.slideNext()}
+          disabled={currentExpIdx === 5}
+          style={{
+            width: "50px",
+            height: "50px",
+            background: "#f5f5f5",
+            textTransform: "capitalize",
+            color: currentExpIdx === 5 ? "grey" : "#000000",
+            fontWeight: "bold",
+            fontSize: "60px",
+            boxShadow: "none",
+          }}
+          variant="contained"
+        >
+          ›
+        </Button>
+      </Grid>
+      <Grid
+        container
+        item
         xs={8}
         sm={11}
         md={8}
-        display="flex"
         justifyContent="center"
         padding="50px 0"
+        sx={{
+          ":nthChild(odd)": {
+            background: "#ededed",
+          },
+          display: { xs: "none", sm: "flex" },
+        }}
       >
-        <Grid
-          item
-          xs={4}
-          sm={6}
-          md={4}
-          width="100%"
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          style={{
-            aspectRatio: "4/3",
-            background: "#ededed",
-            padding: "20px",
-            borderRight: "1px solid #3a3a3c",
-          }}
-        >
-          <Typography
-            component="h1"
+        {(data || []).map((item, index) => (
+          <Grid
+            item
+            key={index}
+            xs={4}
+            sm={6}
+            md={4}
+            width="100%"
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
             style={{
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: "20px",
-              fontWeight: 200,
-              color: "#3a3a3c",
+              aspectRatio: "4/3",
+              // background: "#ededed",
+              padding: "20px",
+              borderRight: "1px solid #3a3a3c",
             }}
           >
-            Invest in a Great Brand
-          </Typography>
-          <Typography
-            component="li"
-            style={{
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: "14px",
-              lineHeight: "20px",
-              color: "#3a3a3c",
-            }}
-          >
-            South India’s well established real estate developers with
-            operations in Chennai, Hyderabad and Bangalore. Alliance and
-            Urbanrise believes in building relationships based on trust and
-            commitment to quality.
-          </Typography>
-        </Grid>
-        <Grid
-          item
-          xs={4}
-          sm={6}
-          md={4}
-          width="100%"
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          style={{
-            aspectRatio: "4/3",
-            padding: "20px",
-            borderRight: "1px solid #3a3a3c",
-          }}
-        >
-          <Typography
-            component="h1"
-            style={{
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: "20px",
-              fontWeight: 200,
-              color: "#3a3a3c",
-            }}
-          >
-            Invest in Clear Titles.
-          </Typography>
-          <Typography
-            component="li"
-            style={{
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: "14px",
-              lineHeight: "20px",
-              color: "#3a3a3c",
-            }}
-          >
-            10X returns is a DTCP approved plot.
-          </Typography>
-          <Typography
-            component="li"
-            style={{
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: "14px",
-              lineHeight: "20px",
-              color: "#3a3a3c",
-            }}
-          >
-            Ready to build villa plots and it comes with clear title and
-            transparency that Alliance is reputed for.
-          </Typography>
-        </Grid>
-        <Grid
-          item
-          xs={4}
-          sm={6}
-          md={4}
-          width="100%"
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          style={{ aspectRatio: "4/3", background: "#ededed", padding: "20px" }}
-        >
-          <Typography
-            component="h1"
-            style={{
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: "20px",
-              fontWeight: 200,
-              color: "#3a3a3c",
-            }}
-          >
-            Invest in a Great Location.
-          </Typography>
-          <Typography
-            component="li"
-            style={{
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: "14px",
-              lineHeight: "20px",
-              color: "#3a3a3c",
-            }}
-          >
-            Located bang on State Highway SH-57 on a 6 Lane Highway.
-          </Typography>
-          <Typography
-            component="li"
-            style={{
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: "14px",
-              lineHeight: "20px",
-              color: "#3a3a3c",
-            }}
-          >
-            The Aerospace park, in which 30 areospace companies that are setting
-            up units takes the Oragadam-Sriperambadur belt to a new high and
-            this is part of the Phase One plan alone.
-          </Typography>
-          <Typography
-            component="li"
-            style={{
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: "14px",
-              lineHeight: "20px",
-              color: "#3a3a3c",
-            }}
-          >
-            Oragadam is home to auto majors including Daimler-Benz,
-            Renault-Nissan, Ford, Hyundai and others.
-          </Typography>
-        </Grid>
-        <Grid
-          item
-          xs={4}
-          sm={6}
-          md={4}
-          width="100%"
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          style={{
-            aspectRatio: "4/3",
-            padding: "20px",
-            borderRight: "1px solid #3a3a3c",
-          }}
-        >
-          <Typography
-            component="h1"
-            style={{
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: "20px",
-              fontWeight: 200,
-              color: "#3a3a3c",
-            }}
-          >
-            Invest in a Great Location.
-          </Typography>
-          <Typography
-            component="li"
-            style={{
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: "14px",
-              lineHeight: "20px",
-              color: "#3a3a3c",
-            }}
-          >
-            Well connected by road and rail, Oragadam is regarded the biggest
-            automobile hub in not just Chennai or India, But, the whole of South
-            Asia.
-          </Typography>
-          <Typography
-            component="li"
-            style={{
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: "14px",
-              lineHeight: "20px",
-              color: "#3a3a3c",
-            }}
-          >
-            Emerging as the next giant residential hub. It is estimated to have
-            a workforce of over 1 Million by 2035. It is soon set to have all
-            facilities of a cosmopolitan city of Intl standards.{" "}
-          </Typography>
-        </Grid>
-        <Grid
-          item
-          xs={4}
-          sm={6}
-          md={4}
-          width="100%"
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          style={{
-            aspectRatio: "4/3",
-            padding: "20px",
-            borderRight: "1px solid #3a3a3c",
-            background: "#ededed",
-          }}
-        >
-          <Typography
-            component="h1"
-            style={{
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: "20px",
-              fontWeight: 200,
-              color: "#3a3a3c",
-            }}
-          >
-            Invest in a Great Product.
-          </Typography>
-          <Typography
-            component="li"
-            style={{
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: "14px",
-              lineHeight: "20px",
-              color: "#3a3a3c",
-            }}
-          >
-            A PLUG & BUILD LAYOUT – 30 Acres of Well developed layout of plots
-            equipped with black top roads, street lights, Well-planned
-            underground sewage and Water and EB connection up to the plot.
-          </Typography>
-        </Grid>
-        <Grid
-          item
-          xs={4}
-          sm={6}
-          md={4}
-          width="100%"
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          style={{ aspectRatio: "4/3", padding: "20px" }}
-        >
-          <Typography
-            component="h1"
-            style={{
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: "20px",
-              fontWeight: 200,
-              color: "#3a3a3c",
-            }}
-          >
-            High potential for fast Appreciation
-          </Typography>
-          <Typography
-            component="p"
-            style={{
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: "14px",
-              lineHeight: "20px",
-              color: "#3a3a3c",
-            }}
-          >
-            Property set to earn over 30% to 100% more than interior locations.
-          </Typography>
-          <Typography
-            component="li"
-            style={{
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: "14px",
-              lineHeight: "20px",
-              color: "#3a3a3c",
-            }}
-          >
-            Located exactly on 6-lane Oragadam main road.
-          </Typography>
-          <Typography
-            component="li"
-            style={{
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: "14px",
-              lineHeight: "20px",
-              color: "#3a3a3c",
-            }}
-          >
-            Proximity to arterial roads keeos you ahead of others in time and
-            space.
-          </Typography>
-          <Typography
-            component="li"
-            style={{
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: "14px",
-              lineHeight: "20px",
-              color: "#3a3a3c",
-            }}
-          >
-            The 200ft Oragadam main road connects you to Chennai city and its
-            suburbs.
-          </Typography>
-        </Grid>
+            <Typography
+              component="h1"
+              style={{
+                textAlign: "center",
+                padding: "10px 0",
+                fontSize: "20px",
+                fontWeight: 400,
+                color: "#3a3a3c",
+              }}
+            >
+              {item?.title}
+            </Typography>
+            <Typography
+              key={index}
+              component="p"
+              style={{
+                textAlign: "center",
+                padding: "10px 0",
+                fontSize: "14px",
+                lineHeight: "20px",
+                color: "#3a3a3c",
+              }}
+            >
+              {item?.subTitle || ""}
+            </Typography>
+            {(item?.list || []).map((li, index) => (
+              <Typography
+                key={index}
+                component="li"
+                style={{
+                  textAlign: "center",
+                  padding: "10px 0",
+                  fontSize: "14px",
+                  lineHeight: "20px",
+                  color: "#3a3a3c",
+                }}
+              >
+                {li || ""}
+              </Typography>
+            ))}
+          </Grid>
+        ))}
       </Grid>
     </Grid>
   );
@@ -985,11 +1012,19 @@ const Configurations = () => {
 const Gallery = () => {
   const sliderRef = useRef();
   const [currentExpIdx, setCurrentExpIdx] = useState();
+  const [slidesPerView, setSlidesPerView] = useState(3);
+
+  useEffect(() => {
+    if (sliderRef.current.width <= 425) {
+      setSlidesPerView(1);
+    }
+  }, [sliderRef?.current?.width]);
   return (
     <Grid container item xs={12} display="flex" justifyContent="center">
       <Grid
         item
-        xs={7}
+        xs={12}
+        sm={7}
         display="flex"
         justifyContent="center"
         style={{ padding: "20px 0" }}
@@ -1011,7 +1046,7 @@ const Gallery = () => {
       </Grid>
       <Grid item xs={11} md={8} display="flex" justifyContent="center">
         <Swiper
-          slidesPerView={3}
+          slidesPerView={slidesPerView}
           spaceBetween={30}
           onSlideChange={(swiper) => {
             const currIdx = swiper.activeIndex;
@@ -1023,7 +1058,10 @@ const Gallery = () => {
           className="mySwiper"
         >
           {(galleryImgList || []).map((item, index) => (
-            <SwiperSlide style={{ height: "300px", width: "300px" }}>
+            <SwiperSlide
+              key={index}
+              style={{ height: "300px", width: "300px" }}
+            >
               <Grid
                 item
                 xs={12}
@@ -1054,6 +1092,7 @@ const Gallery = () => {
             color: currentExpIdx === 0 ? "grey" : "#000000",
             fontWeight: "bold",
             fontSize: "60px",
+            boxShadow: "none",
           }}
           variant="contained"
         >
@@ -1070,6 +1109,7 @@ const Gallery = () => {
             color: currentExpIdx === 6 ? "grey" : "#000000",
             fontWeight: "bold",
             fontSize: "60px",
+            boxShadow: "none",
           }}
           variant="contained"
         >
@@ -1080,7 +1120,7 @@ const Gallery = () => {
   );
 };
 
-const Location = () => {
+const Location = (setOpenEnquiry) => {
   return (
     <Grid
       container
@@ -1138,7 +1178,7 @@ const Location = () => {
               textAlign: "center",
               padding: "10px 0",
               fontSize: "24px",
-              fontWeight: 200,
+              fontWeight: 400,
               color: "#000000",
             }}
           >
@@ -1174,7 +1214,7 @@ const Location = () => {
               textAlign: "center",
               padding: "10px 0",
               fontSize: "24px",
-              fontWeight: 200,
+              fontWeight: 400,
               color: "#000000",
             }}
           >
@@ -1210,7 +1250,7 @@ const Location = () => {
               textAlign: "center",
               padding: "10px 0",
               fontSize: "24px",
-              fontWeight: 200,
+              fontWeight: 400,
               color: "#000000",
             }}
           >
@@ -1233,11 +1273,33 @@ const Location = () => {
           </Typography>
         </Grid>
       </Grid>
+      <Grid
+        item
+        xs={7}
+        sx={{ marginBottom: "20px", display: { xs: "flex", sm: "none" } }}
+      >
+        <Button
+          onClick={() => setOpenEnquiry?.setOpenEnquiry(true)}
+          style={{
+            width: "100%",
+            height: "40px",
+            background: "#49484b",
+            textTransform: "capitalize",
+            color: "#ffffff",
+            fontWeight: "bold",
+            fontSize: "18px",
+            border: "2px solid #ffffff",
+          }}
+          variant="contained"
+        >
+          download brochure
+        </Button>
+      </Grid>
     </Grid>
   );
 };
 
-const AnyReactComponent = ({ text }) => <div>{text}</div>;
+const AnyReactComponent = ({ text }) => <Box component="div">{text}</Box>;
 
 const AboutUs = () => {
   const defaultProps = {
@@ -1279,6 +1341,7 @@ const AboutUs = () => {
         display="flex"
         flexDirection="column"
         justifyContent="center"
+        sx={{ marginBottom: "50px" }}
       >
         <Typography
           component="p"
@@ -1396,59 +1459,144 @@ const AboutUs = () => {
               padding: "20px",
             }}
           >
-            <Grid item xs={12} style={{ margin: "10px 0" }}>
-              <TextField
-                type="text"
-                id="outlined-basic1"
-                placeholder="Full Name"
+            <Grid container item xs={12} style={{ margin: "10px 0" }}>
+              <Grid
+                item
+                xs={2}
+                sm={1}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
                 style={{
-                  background: "#ffffff",
-                  width: "100%",
-                  borderRadius: "5px",
+                  margin: "10px 0",
+                  height: "40px",
+                  width: "50px",
+                  borderTopLeftRadius: "5px",
+                  borderBottomLeftRadius: "5px",
+                  background: "#000",
                 }}
-                InputProps={{
-                  sx: {
-                    height: "40px",
-                  },
+              >
+                <PersonIcon sx={{ fontSize: 25, color: "#fff" }} />
+              </Grid>
+              <Grid
+                item
+                xs={10}
+                sm={11}
+                style={{
+                  margin: "10px 0",
                 }}
-                variant="outlined"
-              />
+              >
+                <TextField
+                  type="text"
+                  id="outlined-basic1"
+                  placeholder="Full Name"
+                  style={{
+                    background: "#ffffff",
+                    width: "100%",
+                    borderRadius: "5px",
+                  }}
+                  InputProps={{
+                    sx: {
+                      height: "40px",
+                    },
+                  }}
+                  variant="outlined"
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={12} style={{ margin: "10px 0" }}>
-              <TextField
-                type="number"
-                id="outlined-basic2"
-                placeholder="Phone*"
+            <Grid container item xs={12} style={{ margin: "10px 0" }}>
+              <Grid
+                item
+                xs={2}
+                sm={1}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
                 style={{
-                  background: "#ffffff",
-                  width: "100%",
+                  margin: "10px 0",
+                  height: "40px",
+                  width: "50px",
+                  borderTopLeftRadius: "5px",
+                  borderBottomLeftRadius: "5px",
+                  background: "#000",
+                }}
+              >
+                <PhoneIphoneIcon sx={{ fontSize: 25, color: "#fff" }} />
+              </Grid>
+              <Grid
+                item
+                xs={10}
+                sm={11}
+                style={{
+                  margin: "10px 0",
+                  background: "#000",
                   borderRadius: "5px",
                 }}
-                InputProps={{
-                  sx: {
-                    height: "40px",
-                  },
-                }}
-                variant="outlined"
-              />
+              >
+                <TextField
+                  type="number"
+                  id="outlined-basic2"
+                  placeholder="Phone*"
+                  style={{
+                    background: "#ffffff",
+                    width: "100%",
+                    borderRadius: "5px",
+                  }}
+                  InputProps={{
+                    sx: {
+                      height: "40px",
+                    },
+                  }}
+                  variant="outlined"
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={12} style={{ margin: "10px 0" }}>
-              <TextField
-                type="email"
-                id="outlined-basic3"
-                placeholder="Email"
+            <Grid container item xs={12} style={{ margin: "10px 0" }}>
+              <Grid
+                item
+                xs={2}
+                sm={1}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
                 style={{
-                  background: "#ffffff",
-                  width: "100%",
+                  margin: "10px 0",
+                  height: "40px",
+                  width: "50px",
+                  background: "#000",
+                  borderTopLeftRadius: "5px",
+                  borderBottomLeftRadius: "5px",
+                }}
+              >
+                <EmailIcon sx={{ fontSize: 25, color: "#fff" }} />
+              </Grid>
+              <Grid
+                item
+                xs={10}
+                sm={11}
+                style={{
+                  margin: "10px 0",
+                  background: "#000",
                   borderRadius: "5px",
                 }}
-                InputProps={{
-                  sx: {
-                    height: "40px",
-                  },
-                }}
-                variant="outlined"
-              />
+              >
+                <TextField
+                  type="email"
+                  id="outlined-basic3"
+                  placeholder="Email"
+                  style={{
+                    background: "#ffffff",
+                    width: "100%",
+                    borderRadius: "5px",
+                  }}
+                  InputProps={{
+                    sx: {
+                      height: "40px",
+                    },
+                  }}
+                  variant="outlined"
+                />
+              </Grid>
             </Grid>
             <Grid item xs={6} sm={3} style={{ paddingTop: "30px" }}>
               <Button
@@ -1544,7 +1692,7 @@ const PrivacyPolicy = () => {
       xs={12}
       display="flex"
       justifyContent="center"
-      style={{ background: "#434343" }}
+      style={{ background: "#434343", paddingBottom: "30px" }}
     >
       <Grid item xs={11} md={7} display="flex" justifyContent="center">
         <Typography
@@ -1584,5 +1732,491 @@ const PrivacyPolicy = () => {
         </Typography>
       </Grid>
     </Grid>
+  );
+};
+
+const UserDetails = () => {
+  const [userData, setUserData] = useState({
+    name: "",
+    phoneNumber: null,
+    email: "",
+  });
+
+  const handleFormSubmit = async (formData) => {
+    await postData(formData);
+  };
+
+  return (
+    <Grid
+      item
+      xs={12}
+      sm={4}
+      md={2}
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      sx={{
+        background: "#607d8b",
+        padding: "10px",
+        borderRadius: "30px",
+        position: { xs: "static", sm: "absolute" },
+        right: { xs: "20px", md: "50px" },
+        top: { xs: 0, md: "100px" },
+      }}
+    >
+      <Grid
+        item
+        xs={12}
+        sx={{ borderBottom: "1px solid #c594a8", width: "100%" }}
+      >
+        <Typography
+          component="h1"
+          style={{
+            textAlign: "center",
+            padding: "10px 0",
+            fontSize: "16px",
+            fontWeight: "bold",
+            color: "#ecc215",
+          }}
+        >
+          Get A Call Back
+        </Typography>
+      </Grid>
+      <Grid
+        container
+        item
+        xs={10}
+        display="flex"
+        justifyContent="center"
+        style={{
+          borderRadius: "5px",
+        }}
+      >
+        <Grid container item xs={12} style={{ margin: "5px 0" }}>
+          <Grid
+            item
+            xs={2}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            style={{
+              margin: "10px 0",
+              height: "40px",
+              width: "50px",
+              borderTopLeftRadius: "5px",
+              borderBottomLeftRadius: "5px",
+              background: "#000",
+            }}
+          >
+            <PersonIcon sx={{ fontSize: 25, color: "#fff" }} />
+          </Grid>
+          <Grid
+            item
+            xs={10}
+            style={{
+              margin: "10px 0",
+            }}
+          >
+            <TextField
+              type="text"
+              id="outlined-basic1"
+              onChange={(e) => {
+                setUserData({
+                  ...userData,
+                  name: e.target.value,
+                });
+              }}
+              placeholder="Full Name"
+              style={{
+                background: "#ffffff",
+                width: "100%",
+                borderRadius: "5px",
+              }}
+              InputProps={{
+                sx: {
+                  height: "40px",
+                },
+              }}
+              variant="outlined"
+            />
+          </Grid>
+        </Grid>
+        <Grid container item xs={12} style={{ margin: "5px 0" }}>
+          <Grid
+            item
+            xs={2}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            style={{
+              margin: "10px 0",
+              height: "40px",
+              width: "50px",
+              borderTopLeftRadius: "5px",
+              borderBottomLeftRadius: "5px",
+              background: "#000",
+            }}
+          >
+            <PhoneIphoneIcon sx={{ fontSize: 25, color: "#fff" }} />
+          </Grid>
+          <Grid
+            item
+            xs={10}
+            style={{
+              margin: "10px 0",
+              background: "#000",
+              borderRadius: "5px",
+            }}
+          >
+            <TextField
+              type="number"
+              id="outlined-basic2"
+              onChange={(e) => {
+                setUserData({
+                  ...userData,
+                  phoneNumber: e.target.value,
+                });
+              }}
+              placeholder="Phone*"
+              style={{
+                background: "#ffffff",
+                width: "100%",
+                borderRadius: "5px",
+              }}
+              InputProps={{
+                sx: {
+                  height: "40px",
+                },
+              }}
+              variant="outlined"
+            />
+          </Grid>
+        </Grid>
+        <Grid container item xs={12} style={{ margin: "5px 0" }}>
+          <Grid
+            item
+            xs={2}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            style={{
+              margin: "10px 0",
+              height: "40px",
+              width: "50px",
+              background: "#000",
+              borderTopLeftRadius: "5px",
+              borderBottomLeftRadius: "5px",
+            }}
+          >
+            <EmailIcon sx={{ fontSize: 25, color: "#fff" }} />
+          </Grid>
+          <Grid
+            item
+            xs={10}
+            style={{
+              margin: "10px 0",
+              background: "#000",
+              borderRadius: "5px",
+            }}
+          >
+            <TextField
+              type="email"
+              id="outlined-basic3"
+              onChange={(e) => {
+                setUserData({
+                  ...userData,
+                  email: e.target.value,
+                });
+              }}
+              placeholder="Email"
+              style={{
+                background: "#ffffff",
+                width: "100%",
+                borderRadius: "5px",
+              }}
+              InputProps={{
+                sx: {
+                  height: "40px",
+                },
+              }}
+              variant="outlined"
+            />
+          </Grid>
+        </Grid>
+        <Grid item xs={6} sx={{ marginBottom: "10px" }}>
+          <Button
+            onClick={() => handleFormSubmit(userData)}
+            style={{
+              width: "100%",
+              height: "40px",
+              background: "#db9f26",
+              textTransform: "capitalize",
+              color: "#3a3a3c",
+              fontWeight: "bold",
+              fontSize: "18px",
+              border: "2px solid #ffc652",
+            }}
+            variant="contained"
+          >
+            Submit
+          </Button>
+        </Grid>
+      </Grid>
+    </Grid>
+  );
+};
+
+const Enquiry = (openEnquiry, setOpenEnquiry) => {
+  const closeTab = () => {
+    openEnquiry?.setOpenEnquiry(false);
+  };
+  return (
+    <Dialog
+      open={openEnquiry?.openEnquiry}
+      onClose={closeTab}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+      sx={{
+        background: "rgba(0, 0, 0, 0.88)",
+        height: "60vh",
+        ".MuiDialog-paper": {
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          borderRadius: "5px",
+          background: "black",
+          maxWidth: { xs: "md", sm: "sm" },
+          height: { xs: "100%", sm: "70%" },
+          width: "100%",
+          "::-webkit-scrollbar": {
+            display: "none",
+          },
+        },
+      }}
+    >
+      <Grid
+        container
+        item
+        xs={12}
+        width="100%"
+        display="flex"
+        justifyContent="center"
+      >
+        <Grid
+          item
+          xs={12}
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ height: "15%", background: "#272727", padding: "0 20px" }}
+        >
+          <Typography
+            component="h1"
+            style={{
+              textAlign: "center",
+              fontSize: "18px",
+              color: "#fff",
+            }}
+          >
+            {" "}
+            I'm interested
+          </Typography>
+          <CloseIcon
+            onClick={closeTab}
+            sx={{ fontSize: 35, color: "#fff", cursor: "pointer" }}
+          />
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          sx={{ height: "85%", background: "#fff", padding: "20px" }}
+        >
+          <Grid
+            item
+            xs={12}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Typography
+              component="p"
+              style={{
+                fontSize: "14px",
+                color: "#000",
+              }}
+            >
+              Please enter the details below to get the detailed pricing
+              information.
+            </Typography>
+          </Grid>
+          <Grid
+            container
+            item
+            xs={11}
+            display="flex"
+            justifyContent="center"
+            style={{
+              borderRadius: "5px",
+            }}
+          >
+            <Grid container item xs={12} style={{ margin: "5px 0" }}>
+              <Grid
+                item
+                xs={2}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                style={{
+                  margin: "10px 0",
+                  height: "40px",
+                  width: "50px",
+                  borderTopLeftRadius: "5px",
+                  borderBottomLeftRadius: "5px",
+                  background: "#000",
+                }}
+              >
+                <PersonIcon sx={{ fontSize: 25, color: "#fff" }} />
+              </Grid>
+              <Grid
+                item
+                xs={10}
+                style={{
+                  margin: "10px 0",
+                }}
+              >
+                <TextField
+                  type="text"
+                  id="outlined-basic1"
+                  placeholder="Full Name"
+                  style={{
+                    background: "#ffffff",
+                    width: "100%",
+                    borderRadius: "5px",
+                  }}
+                  InputProps={{
+                    sx: {
+                      height: "40px",
+                    },
+                  }}
+                  variant="outlined"
+                />
+              </Grid>
+            </Grid>
+            <Grid container item xs={12} style={{ margin: "5px 0" }}>
+              <Grid
+                item
+                xs={2}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                style={{
+                  margin: "10px 0",
+                  height: "40px",
+                  width: "50px",
+                  borderTopLeftRadius: "5px",
+                  borderBottomLeftRadius: "5px",
+                  background: "#000",
+                }}
+              >
+                <PhoneIphoneIcon sx={{ fontSize: 25, color: "#fff" }} />
+              </Grid>
+              <Grid
+                item
+                xs={10}
+                style={{
+                  margin: "10px 0",
+
+                  borderRadius: "5px",
+                }}
+              >
+                <TextField
+                  type="number"
+                  id="outlined-basic2"
+                  placeholder="Phone*"
+                  style={{
+                    background: "#ffffff",
+                    width: "100%",
+                    borderRadius: "5px",
+                  }}
+                  InputProps={{
+                    sx: {
+                      height: "40px",
+                    },
+                  }}
+                  variant="outlined"
+                />
+              </Grid>
+            </Grid>
+            <Grid container item xs={12} style={{ margin: "5px 0" }}>
+              <Grid
+                item
+                xs={2}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                style={{
+                  margin: "10px 0",
+                  height: "40px",
+                  width: "50px",
+                  background: "#000",
+                  borderTopLeftRadius: "5px",
+                  borderBottomLeftRadius: "5px",
+                }}
+              >
+                <EmailIcon sx={{ fontSize: 25, color: "#fff" }} />
+              </Grid>
+              <Grid
+                item
+                xs={10}
+                style={{
+                  margin: "10px 0",
+
+                  borderRadius: "5px",
+                }}
+              >
+                <TextField
+                  type="email"
+                  id="outlined-basic3"
+                  placeholder="Email"
+                  style={{
+                    background: "#ffffff",
+                    width: "100%",
+                    borderRadius: "5px",
+                  }}
+                  InputProps={{
+                    sx: {
+                      height: "40px",
+                    },
+                  }}
+                  variant="outlined"
+                />
+              </Grid>
+            </Grid>
+            <Grid item xs={6} sx={{ marginBottom: "10px" }}>
+              <Button
+                style={{
+                  width: "100%",
+                  height: "40px",
+                  background: "#db9f26",
+                  textTransform: "capitalize",
+                  color: "#3a3a3c",
+                  fontWeight: "bold",
+                  fontSize: "18px",
+                  border: "2px solid #ffc652",
+                }}
+                variant="contained"
+              >
+                Submit
+              </Button>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
+    </Dialog>
   );
 };
