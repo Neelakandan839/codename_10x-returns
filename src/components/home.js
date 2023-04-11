@@ -682,7 +682,7 @@ const Overview = () => {
             textAlign: "center",
             padding: "10px 0",
             fontSize: "40px",
-            fontWeight: 200,
+            fontWeight: "bold",
             color: "#3a3a3c",
             borderBottom: "2px solid #3a3a3c",
           }}
@@ -796,7 +796,7 @@ const Configurations = () => {
             textAlign: "center",
             padding: "10px 0",
             fontSize: "40px",
-            fontWeight: 200,
+            fontWeight: "bold",
             color: "#3a3a3c",
             borderBottom: "2px solid #3a3a3c",
           }}
@@ -1036,7 +1036,7 @@ const Gallery = () => {
             textAlign: "center",
             padding: "10px 0",
             fontSize: "40px",
-            fontWeight: 200,
+            fontWeight: "bold",
             color: "#3a3a3c",
             borderBottom: "2px solid #3a3a3c",
           }}
@@ -1146,7 +1146,7 @@ const Location = (setOpenEnquiry) => {
             textAlign: "center",
             padding: "10px 0",
             fontSize: "40px",
-            fontWeight: 200,
+            fontWeight: "bold",
             color: "#ffffff",
             borderBottom: "2px solid grey",
           }}
@@ -1326,7 +1326,7 @@ const AboutUs = () => {
             textAlign: "center",
             padding: "10px 0",
             fontSize: "40px",
-            fontWeight: 200,
+            fontWeight: "bold",
             color: "#3a3a3c",
             borderBottom: "2px solid #3a3a3c",
           }}
