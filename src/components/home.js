@@ -91,6 +91,7 @@ const HomePage = () => {
           }}
           alt="landing_img"
           src={landing_img}
+          loading="lazy"
         />
         <Img
           sx={{
@@ -101,6 +102,7 @@ const HomePage = () => {
           }}
           alt="landing_img_xs"
           src={landing_img_xs}
+          loading="lazy"
         />
         <UserDetails />
       </Grid>
@@ -121,6 +123,7 @@ const HomePage = () => {
             }}
             alt="offer"
             src={offer}
+            loading="lazy"
           />
           <Img
             sx={{
@@ -130,6 +133,7 @@ const HomePage = () => {
             }}
             alt="offer"
             src={offer_xs}
+            loading="lazy"
           />
         </Grid>
       </Grid>
@@ -279,6 +283,7 @@ const Navbar = (setOpenEnquiry) => {
                 style={{ width: "100%", height: "100%" }}
                 alt="logo"
                 src={logo}
+                loading="lazy"
               />
             </Box>
           </Grid>
@@ -1075,6 +1080,7 @@ const Gallery = () => {
                   style={{ width: "100%", height: "100%" }}
                   alt={`gallery_img${index}`}
                   src={item}
+                  loading="lazy"
                 />
               </Grid>
             </SwiperSlide>
@@ -1631,6 +1637,7 @@ const AboutUs = () => {
             style={{ width: "100%" }}
             alt="alliance_logo"
             src={alliance_logo}
+            loading="lazy"
           />
         </Grid>
       </Grid>
