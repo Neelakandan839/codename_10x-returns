@@ -687,7 +687,7 @@ const Overview = () => {
             textAlign: "center",
             padding: "10px 0",
             fontSize: "40px",
-            fontWeight: "bold",
+            fontWeight: "bolder",
             color: "#3a3a3c",
             borderBottom: "2px solid #3a3a3c",
           }}
