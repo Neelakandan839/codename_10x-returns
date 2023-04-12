@@ -57,6 +57,24 @@ const galleryImgList = [
   gallery_img9,
 ];
 
+const fileFormData = new FormData();
+fileFormData.append("FirstName", "nk");
+fileFormData.append("Phone", 6382684501);
+fileFormData.append("EmailAddress", "sxdcfgbhj");
+fileFormData.append("MXHOrgCode", 5527);
+
+fileFormData.append("MXHLandingPageId", "30a68982-b172-11eb-8573-06ff16d87222");
+fileFormData.append("MXHFormBehaviour", 1);
+fileFormData.append("MXHFormDataTransfer", 0);
+fileFormData.append(
+  "MXHRedirectUrl",
+  "https://codename10xreturns.com/thanku.html"
+);
+fileFormData.append("MXHAsc", 5);
+fileFormData.append("MXHPageTitle", "Codename 10x Returns");
+fileFormData.append("MXHOutputMessagePosition", 0);
+fileFormData.append("MXHIsExternallyUsed", 1);
+
 const HomePage = () => {
   const [openEnquiry, setOpenEnquiry] = useState(false);
 
@@ -1749,8 +1767,16 @@ const UserDetails = () => {
     email: "",
   });
 
-  const handleFormSubmit = async (formData) => {
-    await postData(formData);
+  const handleFormSubmit = async () => {
+    fetch("https://httpdump.app/dumps/27724aef-88f9-474d-96fd-eca15feeb2f5", {
+      method: "post",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      body: fileFormData,
+    }).then((res) => {
+      console.log(res.json());
+    });
   };
 
   return (
